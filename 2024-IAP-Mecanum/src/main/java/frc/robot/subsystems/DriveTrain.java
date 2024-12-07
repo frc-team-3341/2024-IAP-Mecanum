@@ -37,9 +37,14 @@ public class DriveTrain extends SubsystemBase {
     
   }
 
+  public void mecanumDrive(double left, double right) {
+    
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
 
   }
 }
