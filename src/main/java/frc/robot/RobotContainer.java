@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,11 +23,11 @@ public class RobotContainer {
 
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final Joystick joy1 = new Joystick(0);
+  private final XboxController controller = new XboxController(0);
 
   private final DriveTrain dt = new DriveTrain();
 
-  private final MecanumDrive mecanumDrive = new MecanumDrive(dt, joy1);
+  private final MecanumDrive mecanumDrive = new MecanumDrive(dt, controller);
   
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -57,14 +58,5 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     return mecanumDrive;
-    /*return new SequentialCommandGroup( 
-      new Autodrive(dt, 1.0), 
-      new PIDTurn(dt, 90), 
-      new Autodrive(dt, 1.0),
-      new PIDTurn(dt, 90),
-      new Autodrive(dt, 1.0),
-      new PIDTurn(dt, 90),
-      new Autodrive(dt, 1.0)
-      );*/
   }
 }
