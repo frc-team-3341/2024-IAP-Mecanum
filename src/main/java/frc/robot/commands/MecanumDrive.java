@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
@@ -15,9 +14,9 @@ public class MecanumDrive extends Command {
   DriveTrain dt;
   XboxController controller;
   
-  public MecanumDrive(DriveTrain dt, XboxController controller) {
+  public MecanumDrive(DriveTrain dt, XboxController controller2) {
     this.dt = dt;
-    this.controller = controller;
+    this.controller = controller2;
 
     addRequirements(dt);
 
