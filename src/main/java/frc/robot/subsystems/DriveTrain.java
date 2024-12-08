@@ -1,45 +1,68 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveTrain extends SubsystemBase {
-  private static final int kFrontLeftChannel = 2;
-  private static final int kRearLeftChannel = 3;
-  private static final int kFrontRightChannel = 1;
-  private static final int kRearRightChannel = 0;
 
-  private final PWMSparkMax m_frontLeftMotor;
-  private final PWMSparkMax m_rearLeftMotor;
-  private final PWMSparkMax m_frontRightMotor;
-  private final PWMSparkMax m_rearRightMotor;
+  private final CANSparkMax m_frontLeftMotor;
+  private final CANSparkMax m_rearLeftMotor;
+  private final CANSparkMax m_frontRightMotor;
+  private final CANSparkMax m_rearRightMotor;
+
+  // NEO motor encoders
+  // private final CANSparkMax m_frontLeftEncoder;
+  // private final CANSparkMax m_rearLeftEncoder;
+  // private final CANSparkMax m_frontRightEncoder;
+  // private final CANSparkMax m_rearRightEncoder;
 
   private final MecanumDriveKinematics m_kinematics;
 
-  public DriveTrain() {
-    // Initialize motors
-    m_frontLeftMotor = new PWMSparkMax(kFrontLeftChannel);
-    m_rearLeftMotor = new PWMSparkMax(kRearLeftChannel);
-    m_frontRightMotor = new PWMSparkMax(kFrontRightChannel);
-    m_rearRightMotor = new PWMSparkMax(kRearRightChannel);
+  private static final int kFrontLeftChannel = 1;
+  private static final int kRearLeftChannel = 2;
+  private static final int kFrontRightChannel = 3;
+  private static final int kRearRightChannel = 4;
 
-    // Invert the right-side motors
+  public DriveTrain() {
+
+    // Initialize motor controllers
+    m_frontLeftMotor = new CANSparkMax(kFrontLeftChannel, MotorType.kBrushless);
+    m_rearLeftMotor = new CANSparkMax(kRearLeftChannel, MotorType.kBrushless);
+    m_frontRightMotor = new CANSparkMax(kFrontRightChannel, MotorType.kBrushless);
+    m_rearRightMotor = new CANSparkMax(kRearRightChannel, MotorType.kBrushless);
+
+    // Initialize encoders from the NEO motors
+    // m_frontLeftEncoder = m_frontLeftMotor.getEncoder();
+    // m_rearLeftEncoder = m_rearLeftMotor.getEncoder();
+    // m_frontRightEncoder = m_frontRightMotor.getEncoder();
+    // m_rearRightEncoder = m_rearRightMotor.getEncoder();
+
+    // Configure encoders
+    double wheelDiameter = 0.1347; //need to ask
+    double ticksPerRevolution = 42;
+
+    // Set distance per tick to convert encoder counts to distance (meters)
+    double distancePerTick = Math.PI * wheelDiameter / ticksPerRevolution;
+      // m_frontLeftEncoder.setPositionConversionFactor(distancePerTick);
+      // m_rearLeftEncoder.setPositionConversionFactor(distancePerTick);
+      // m_frontRightEncoder.setPositionConversionFactor(distancePerTick);
+      // m_rearRightEncoder.setPositionConversionFactor(distancePerTick);
+
+    // Invert the right-side motors to match the direction of travel
     m_frontRightMotor.setInverted(true);
     m_rearRightMotor.setInverted(true);
 
     // Define wheel locations relative to the robot's center
-    Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-    Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-    Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-    Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
+    Translation2d m_frontLeftLocation = new Translation2d(0.277, 0.277);
+    Translation2d m_frontRightLocation = new Translation2d(0.277, -0.277);
+    Translation2d m_backLeftLocation = new Translation2d(-0.277, 0.277);
+    Translation2d m_backRightLocation = new Translation2d(-0.277, -0.277);
 
     // Create kinematics object using wheel locations
     m_kinematics = new MecanumDriveKinematics(
@@ -54,25 +77,18 @@ public class DriveTrain extends SubsystemBase {
     // Convert chassis speeds to wheel speeds
     MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(speeds);
 
-    // // Get the maximum wheel speed to normalize if necessary
-    // double maxSpeed = Math.max(
-    //   Math.max(Math.abs(wheelSpeeds.frontLeftMetersPerSecond), Math.abs(wheelSpeeds.frontRightMetersPerSecond)),
-    //   Math.max(Math.abs(wheelSpeeds.rearLeftMetersPerSecond), Math.abs(wheelSpeeds.rearRightMetersPerSecond))
-    // );
-
-    // // Normalize speeds if any wheel speed exceeds 1.0
-    // if (maxSpeed > 1.0) {
-    //   wheelSpeeds.frontLeftMetersPerSecond /= maxSpeed;
-    //   wheelSpeeds.frontRightMetersPerSecond /= maxSpeed;
-    //   wheelSpeeds.rearLeftMetersPerSecond /= maxSpeed;
-    //   wheelSpeeds.rearRightMetersPerSecond /= maxSpeed;
-    // }
-
-    // Set motor outputs
+    // Set motor outputs based on wheel speeds
     m_frontLeftMotor.set(wheelSpeeds.frontLeftMetersPerSecond);
     m_frontRightMotor.set(wheelSpeeds.frontRightMetersPerSecond);
     m_rearLeftMotor.set(wheelSpeeds.rearLeftMetersPerSecond);
     m_rearRightMotor.set(wheelSpeeds.rearRightMetersPerSecond);
+  }
+
+  public void resetEncoders() {
+    // m_frontLeftEncoder.getEncoder().setPosition(0);
+    // m_frontRightEncoder.getEncoder().setPosition(0);
+    // m_rearLeftEncoder.getEncoder().setPosition(0);
+    // m_rearRightEncoder.getEncoder().setPosition(0);
   }
 
   @Override

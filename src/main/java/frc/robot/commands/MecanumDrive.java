@@ -36,14 +36,15 @@ public class MecanumDrive extends Command {
   public void execute() {
     double leftPowerRaw = controller.getRawAxis(0); //x-axis of left joystick
     double rightPowerRaw = controller.getRawAxis(1); //y-axis of left joystick
-
-    dt.mecanumDrive(leftPowerRaw*0.3, rightPowerRaw*0.3, 0.0);
+    double rotation = controller.getRawAxis(2);
+    dt.mecanumDrive(leftPowerRaw*0.3, rightPowerRaw*0.3, rotation);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     dt.mecanumDrive(0.0, 0.0, 0.0);
+    dt.resetEncoders();
   }
 
   // Returns true when the command should end.
@@ -51,4 +52,4 @@ public class MecanumDrive extends Command {
   public boolean isFinished() {
     return false;
   }
-}
+} 
