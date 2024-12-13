@@ -30,14 +30,13 @@ public class MecanumDrive extends Command {
     dt.mecanumDrive(0.0, 0.0, 0.0);
   }
 
-
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double leftPowerRaw = controller.getRawAxis(0); //x-axis of left joystick
-    double rightPowerRaw = controller.getRawAxis(1); //y-axis of left joystick
-    double rotation = controller.getRawAxis(2);
-    dt.mecanumDrive(leftPowerRaw*0.3, rightPowerRaw*0.3, rotation);
+    double leftPowerRaw = controller.getRawAxis(0);     //x-axis of left joystick
+    double rightPowerRaw = controller.getRawAxis(1);    //y-axis of left joystick
+    double rotationPowerRaw = controller.getRawAxis(2); //x-axis of right joystick
+    dt.mecanumDrive(leftPowerRaw*0.3, rightPowerRaw*0.3, rotationPowerRaw*0.3); //default constant multiplier
   }
 
   // Called once the command ends or is interrupted.

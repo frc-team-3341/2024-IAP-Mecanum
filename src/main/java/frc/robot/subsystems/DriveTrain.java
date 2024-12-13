@@ -2,9 +2,15 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.ctre.phoenix.motorcontrol.TalonSRXSimCollection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,11 +22,18 @@ public class DriveTrain extends SubsystemBase {
   private final CANSparkMax m_frontRightMotor;
   private final CANSparkMax m_rearRightMotor;
 
+  // private TalonSRXSimCollection leftDriveSim;
+  // private TalonSRXSimCollection rightDriveSim;
+
+  // private final Field2d m_field = new Field2d();
+  // private final MecanumDriveOdometry m_odometry;
+  // private final MecanumDriveKinematics driveSim;  
+
   // NEO motor encoders
-  // private final CANSparkMax m_frontLeftEncoder;
-  // private final CANSparkMax m_rearLeftEncoder;
-  // private final CANSparkMax m_frontRightEncoder;
-  // private final CANSparkMax m_rearRightEncoder;
+  private final RelativeEncoder m_frontLeftEncoder;
+  private final RelativeEncoder m_rearLeftEncoder;
+  private final RelativeEncoder m_frontRightEncoder;
+  private final RelativeEncoder m_rearRightEncoder;
 
   private final MecanumDriveKinematics m_kinematics;
 
@@ -38,10 +51,10 @@ public class DriveTrain extends SubsystemBase {
     m_rearRightMotor = new CANSparkMax(kRearRightChannel, MotorType.kBrushless);
 
     // Initialize encoders from the NEO motors
-    // m_frontLeftEncoder = m_frontLeftMotor.getEncoder();
-    // m_rearLeftEncoder = m_rearLeftMotor.getEncoder();
-    // m_frontRightEncoder = m_frontRightMotor.getEncoder();
-    // m_rearRightEncoder = m_rearRightMotor.getEncoder();
+    m_frontLeftEncoder = m_frontLeftMotor.getEncoder();
+    m_rearLeftEncoder = m_rearLeftMotor.getEncoder();
+    m_frontRightEncoder = m_frontRightMotor.getEncoder();
+    m_rearRightEncoder = m_rearRightMotor.getEncoder();
 
     // Configure encoders
     double wheelDiameter = 0.1347; //need to ask
@@ -49,10 +62,10 @@ public class DriveTrain extends SubsystemBase {
 
     // Set distance per tick to convert encoder counts to distance (meters)
     double distancePerTick = Math.PI * wheelDiameter / ticksPerRevolution;
-      // m_frontLeftEncoder.setPositionConversionFactor(distancePerTick);
-      // m_rearLeftEncoder.setPositionConversionFactor(distancePerTick);
-      // m_frontRightEncoder.setPositionConversionFactor(distancePerTick);
-      // m_rearRightEncoder.setPositionConversionFactor(distancePerTick);
+    m_frontLeftEncoder.setPositionConversionFactor(distancePerTick);
+    m_rearLeftEncoder.setPositionConversionFactor(distancePerTick);
+    m_frontRightEncoder.setPositionConversionFactor(distancePerTick);
+    m_rearRightEncoder.setPositionConversionFactor(distancePerTick);
 
     // Invert the right-side motors to match the direction of travel
     m_frontRightMotor.setInverted(true);
@@ -70,9 +83,9 @@ public class DriveTrain extends SubsystemBase {
     );
   }
 
-  public void mecanumDrive(double x, double y, double rotation) {
+  public void mecanumDrive(double vx, double vy, double rv) {
     // Create an instance of ChassisSpeeds with the given inputs
-    ChassisSpeeds speeds = new ChassisSpeeds(x, y, rotation);
+    ChassisSpeeds speeds = new ChassisSpeeds(vx, vy, rv);
 
     // Convert chassis speeds to wheel speeds
     MecanumDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(speeds);
@@ -85,10 +98,10 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void resetEncoders() {
-    // m_frontLeftEncoder.getEncoder().setPosition(0);
-    // m_frontRightEncoder.getEncoder().setPosition(0);
-    // m_rearLeftEncoder.getEncoder().setPosition(0);
-    // m_rearRightEncoder.getEncoder().setPosition(0);
+    m_frontLeftEncoder.setPosition(0);
+    m_frontRightEncoder.setPosition(0);
+    m_rearLeftEncoder.setPosition(0);
+    m_rearRightEncoder.setPosition(0);
   }
 
   @Override
